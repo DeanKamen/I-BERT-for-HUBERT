@@ -1,0 +1,33 @@
+        (0): TransformerSentenceEncoderLayer(
+          (dropout_module): FairseqDropout()
+          (activation_dropout_module): FairseqDropout()
+          (activation_fn_approx): IntGELU()
+          (input_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: 0.00, Act_max: 0.00)
+          (self_attn): MultiheadAttention(
+            (dropout_module): FairseqDropout()
+            (k_proj): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+            (v_proj): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+            (q_proj): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+            (k_proj_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: 0.00, Act_max: 0.00)
+            (v_proj_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: 0.00, Act_max: 0.00)
+            (q_proj_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: 0.00, Act_max: 0.00)
+            (softmax): IntSoftmax(
+              (act): QuantAct(activation_bit=16, quant_mode: symmetric, Act_min: 0.00, Act_max: 0.00)
+            )
+            (attn_probs_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: 0.00, Act_max: 0.00)
+            (attn_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: 0.00, Act_max: 0.00)
+            (out_proj): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+          )
+          (pre_self_attn_layer_norm_act): QuantAct(activation_bit=22, quant_mode: symmetric, Act_min: 0.00, Act_max: 0.00)
+          (self_attn_layer_norm): IntLayerNorm(
+            (activation): QuantAct(activation_bit=32, quant_mode: symmetric, Act_min: 0.00, Act_max: 0.00)
+          )
+          (fc1_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: 0.00, Act_max: 0.00)
+          (fc2_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: 0.00, Act_max: 0.00)
+          (fc1): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+          (fc2): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+          (pre_final_layer_norm_act): QuantAct(activation_bit=22, quant_mode: symmetric, Act_min: 0.00, Act_max: 0.00)
+          (final_layer_norm): IntLayerNorm(
+            (activation): QuantAct(activation_bit=32, quant_mode: symmetric, Act_min: 0.00, Act_max: 0.00)
+          )
+        )

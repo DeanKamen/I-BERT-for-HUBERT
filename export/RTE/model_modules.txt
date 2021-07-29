@@ -1,0 +1,576 @@
+RobertaHubInterface(
+  (model): RobertaModel(
+    (encoder): RobertaEncoder(
+      (sentence_encoder): TransformerSentenceEncoder(
+        (dropout_module): FairseqDropout()
+        (embed_tokens): QuantEmbedding()
+        (embed_positions): QuantEmbedding()
+        (embed_positions_act): QuantAct(activation_bit=16, quant_mode: symmetric, Act_min: -2.00, Act_max: 1.99)
+        (layers): ModuleList(
+          (0): TransformerSentenceEncoderLayer(
+            (dropout_module): FairseqDropout()
+            (activation_dropout_module): FairseqDropout()
+            (activation_fn_approx): IntGELU()
+            (input_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -2.27, Act_max: 5.73)
+            (self_attn): MultiheadAttention(
+              (dropout_module): FairseqDropout()
+              (k_proj): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+              (v_proj): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+              (q_proj): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+              (k_proj_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -14.33, Act_max: 15.01)
+              (v_proj_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -4.34, Act_max: 2.96)
+              (q_proj_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -15.37, Act_max: 14.76)
+              (softmax): IntSoftmax(
+                (act): QuantAct(activation_bit=16, quant_mode: symmetric, Act_min: 864854.75, Act_max: 929083701592064.00)
+              )
+              (attn_probs_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: 0.00, Act_max: 0.00)
+              (attn_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -4.04, Act_max: 2.64)
+              (out_proj): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+            )
+            (pre_self_attn_layer_norm_act): QuantAct(activation_bit=22, quant_mode: symmetric, Act_min: -18.45, Act_max: 22.03)
+            (self_attn_layer_norm): IntLayerNorm(
+              (activation): QuantAct(activation_bit=32, quant_mode: none, Act_min: 0.00, Act_max: 0.00)
+            )
+            (fc1_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -23.29, Act_max: 24.70)
+            (fc2_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -0.17, Act_max: 16.86)
+            (fc1): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+            (fc2): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+            (pre_final_layer_norm_act): QuantAct(activation_bit=22, quant_mode: symmetric, Act_min: -40.54, Act_max: 54.55)
+            (final_layer_norm): IntLayerNorm(
+              (activation): QuantAct(activation_bit=32, quant_mode: none, Act_min: 0.00, Act_max: 0.00)
+            )
+          )
+          (1): TransformerSentenceEncoderLayer(
+            (dropout_module): FairseqDropout()
+            (activation_dropout_module): FairseqDropout()
+            (activation_fn_approx): IntGELU()
+            (input_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -13.73, Act_max: 19.39)
+            (self_attn): MultiheadAttention(
+              (dropout_module): FairseqDropout()
+              (k_proj): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+              (v_proj): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+              (q_proj): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+              (k_proj_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -13.95, Act_max: 14.02)
+              (v_proj_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -5.33, Act_max: 5.50)
+              (q_proj_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -12.77, Act_max: 13.80)
+              (softmax): IntSoftmax(
+                (act): QuantAct(activation_bit=16, quant_mode: symmetric, Act_min: 1237459.75, Act_max: 1329296538861568.00)
+              )
+              (attn_probs_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: 0.00, Act_max: 0.00)
+              (attn_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -3.66, Act_max: 2.88)
+              (out_proj): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+            )
+            (pre_self_attn_layer_norm_act): QuantAct(activation_bit=22, quant_mode: symmetric, Act_min: -13.32, Act_max: 19.03)
+            (self_attn_layer_norm): IntLayerNorm(
+              (activation): QuantAct(activation_bit=32, quant_mode: none, Act_min: 0.00, Act_max: 0.00)
+            )
+            (fc1_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -20.36, Act_max: 26.79)
+            (fc2_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -0.17, Act_max: 13.67)
+            (fc1): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+            (fc2): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+            (pre_final_layer_norm_act): QuantAct(activation_bit=22, quant_mode: symmetric, Act_min: -18.94, Act_max: 61.92)
+            (final_layer_norm): IntLayerNorm(
+              (activation): QuantAct(activation_bit=32, quant_mode: none, Act_min: 0.00, Act_max: 0.00)
+            )
+          )
+          (2): TransformerSentenceEncoderLayer(
+            (dropout_module): FairseqDropout()
+            (activation_dropout_module): FairseqDropout()
+            (activation_fn_approx): IntGELU()
+            (input_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -13.76, Act_max: 25.55)
+            (self_attn): MultiheadAttention(
+              (dropout_module): FairseqDropout()
+              (k_proj): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+              (v_proj): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+              (q_proj): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+              (k_proj_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -11.28, Act_max: 10.69)
+              (v_proj_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -5.33, Act_max: 6.19)
+              (q_proj_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -11.54, Act_max: 11.64)
+              (softmax): IntSoftmax(
+                (act): QuantAct(activation_bit=16, quant_mode: symmetric, Act_min: 2688393.75, Act_max: 2887374711291904.00)
+              )
+              (attn_probs_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: 0.00, Act_max: 0.00)
+              (attn_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -3.61, Act_max: 2.63)
+              (out_proj): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+            )
+            (pre_self_attn_layer_norm_act): QuantAct(activation_bit=22, quant_mode: symmetric, Act_min: -13.60, Act_max: 25.05)
+            (self_attn_layer_norm): IntLayerNorm(
+              (activation): QuantAct(activation_bit=32, quant_mode: none, Act_min: 0.00, Act_max: 0.00)
+            )
+            (fc1_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -15.25, Act_max: 27.25)
+            (fc2_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -0.17, Act_max: 14.29)
+            (fc1): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+            (fc2): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+            (pre_final_layer_norm_act): QuantAct(activation_bit=22, quant_mode: symmetric, Act_min: -23.52, Act_max: 64.76)
+            (final_layer_norm): IntLayerNorm(
+              (activation): QuantAct(activation_bit=32, quant_mode: none, Act_min: 0.00, Act_max: 0.00)
+            )
+          )
+          (3): TransformerSentenceEncoderLayer(
+            (dropout_module): FairseqDropout()
+            (activation_dropout_module): FairseqDropout()
+            (activation_fn_approx): IntGELU()
+            (input_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -10.62, Act_max: 22.62)
+            (self_attn): MultiheadAttention(
+              (dropout_module): FairseqDropout()
+              (k_proj): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+              (v_proj): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+              (q_proj): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+              (k_proj_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -11.31, Act_max: 11.24)
+              (v_proj_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -6.97, Act_max: 6.73)
+              (q_proj_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -10.75, Act_max: 11.20)
+              (softmax): IntSoftmax(
+                (act): QuantAct(activation_bit=16, quant_mode: symmetric, Act_min: 2900795.25, Act_max: 3114705182785536.00)
+              )
+              (attn_probs_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: 0.00, Act_max: 0.00)
+              (attn_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -2.46, Act_max: 3.69)
+              (out_proj): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+            )
+            (pre_self_attn_layer_norm_act): QuantAct(activation_bit=22, quant_mode: symmetric, Act_min: -10.40, Act_max: 23.15)
+            (self_attn_layer_norm): IntLayerNorm(
+              (activation): QuantAct(activation_bit=32, quant_mode: none, Act_min: 0.00, Act_max: 0.00)
+            )
+            (fc1_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -13.04, Act_max: 26.80)
+            (fc2_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -0.17, Act_max: 17.58)
+            (fc1): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+            (fc2): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+            (pre_final_layer_norm_act): QuantAct(activation_bit=22, quant_mode: symmetric, Act_min: -29.17, Act_max: 195.03)
+            (final_layer_norm): IntLayerNorm(
+              (activation): QuantAct(activation_bit=32, quant_mode: none, Act_min: 0.00, Act_max: 0.00)
+            )
+          )
+          (4): TransformerSentenceEncoderLayer(
+            (dropout_module): FairseqDropout()
+            (activation_dropout_module): FairseqDropout()
+            (activation_fn_approx): IntGELU()
+            (input_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -11.86, Act_max: 22.39)
+            (self_attn): MultiheadAttention(
+              (dropout_module): FairseqDropout()
+              (k_proj): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+              (v_proj): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+              (q_proj): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+              (k_proj_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -12.52, Act_max: 10.81)
+              (v_proj_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -5.61, Act_max: 7.31)
+              (q_proj_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -11.09, Act_max: 10.63)
+              (softmax): IntSoftmax(
+                (act): QuantAct(activation_bit=16, quant_mode: symmetric, Act_min: 2391826.75, Act_max: 2568211396558848.00)
+              )
+              (attn_probs_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: 0.00, Act_max: 0.00)
+              (attn_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -2.34, Act_max: 3.08)
+              (out_proj): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+            )
+            (pre_self_attn_layer_norm_act): QuantAct(activation_bit=22, quant_mode: symmetric, Act_min: -12.01, Act_max: 23.39)
+            (self_attn_layer_norm): IntLayerNorm(
+              (activation): QuantAct(activation_bit=32, quant_mode: none, Act_min: 0.00, Act_max: 0.00)
+            )
+            (fc1_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -14.53, Act_max: 27.07)
+            (fc2_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -0.17, Act_max: 20.27)
+            (fc1): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+            (fc2): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+            (pre_final_layer_norm_act): QuantAct(activation_bit=22, quant_mode: symmetric, Act_min: -40.47, Act_max: 258.19)
+            (final_layer_norm): IntLayerNorm(
+              (activation): QuantAct(activation_bit=32, quant_mode: none, Act_min: 0.00, Act_max: 0.00)
+            )
+          )
+          (5): TransformerSentenceEncoderLayer(
+            (dropout_module): FairseqDropout()
+            (activation_dropout_module): FairseqDropout()
+            (activation_fn_approx): IntGELU()
+            (input_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -13.97, Act_max: 25.60)
+            (self_attn): MultiheadAttention(
+              (dropout_module): FairseqDropout()
+              (k_proj): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+              (v_proj): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+              (q_proj): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+              (k_proj_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -9.67, Act_max: 11.74)
+              (v_proj_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -6.33, Act_max: 4.79)
+              (q_proj_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -10.39, Act_max: 11.88)
+              (softmax): IntSoftmax(
+                (act): QuantAct(activation_bit=16, quant_mode: symmetric, Act_min: 2413592.25, Act_max: 2591594809131008.00)
+              )
+              (attn_probs_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: 0.00, Act_max: 0.00)
+              (attn_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -3.31, Act_max: 2.67)
+              (out_proj): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+            )
+            (pre_self_attn_layer_norm_act): QuantAct(activation_bit=22, quant_mode: symmetric, Act_min: -13.82, Act_max: 25.23)
+            (self_attn_layer_norm): IntLayerNorm(
+              (activation): QuantAct(activation_bit=32, quant_mode: none, Act_min: 0.00, Act_max: 0.00)
+            )
+            (fc1_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -15.62, Act_max: 27.37)
+            (fc2_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -0.17, Act_max: 18.83)
+            (fc1): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+            (fc2): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+            (pre_final_layer_norm_act): QuantAct(activation_bit=22, quant_mode: symmetric, Act_min: -37.87, Act_max: 238.75)
+            (final_layer_norm): IntLayerNorm(
+              (activation): QuantAct(activation_bit=32, quant_mode: none, Act_min: 0.00, Act_max: 0.00)
+            )
+          )
+          (6): TransformerSentenceEncoderLayer(
+            (dropout_module): FairseqDropout()
+            (activation_dropout_module): FairseqDropout()
+            (activation_fn_approx): IntGELU()
+            (input_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -15.23, Act_max: 26.06)
+            (self_attn): MultiheadAttention(
+              (dropout_module): FairseqDropout()
+              (k_proj): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+              (v_proj): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+              (q_proj): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+              (k_proj_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -11.24, Act_max: 11.16)
+              (v_proj_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -5.18, Act_max: 4.70)
+              (q_proj_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -11.73, Act_max: 11.53)
+              (softmax): IntSoftmax(
+                (act): QuantAct(activation_bit=16, quant_mode: symmetric, Act_min: 2674369.00, Act_max: 2871692175081472.00)
+              )
+              (attn_probs_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: 0.00, Act_max: 0.00)
+              (attn_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -3.51, Act_max: 3.03)
+              (out_proj): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+            )
+            (pre_self_attn_layer_norm_act): QuantAct(activation_bit=22, quant_mode: symmetric, Act_min: -15.19, Act_max: 25.70)
+            (self_attn_layer_norm): IntLayerNorm(
+              (activation): QuantAct(activation_bit=32, quant_mode: none, Act_min: 0.00, Act_max: 0.00)
+            )
+            (fc1_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -16.73, Act_max: 27.37)
+            (fc2_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -0.17, Act_max: 18.81)
+            (fc1): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+            (fc2): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+            (pre_final_layer_norm_act): QuantAct(activation_bit=22, quant_mode: symmetric, Act_min: -61.05, Act_max: 321.72)
+            (final_layer_norm): IntLayerNorm(
+              (activation): QuantAct(activation_bit=32, quant_mode: none, Act_min: 0.00, Act_max: 0.00)
+            )
+          )
+          (7): TransformerSentenceEncoderLayer(
+            (dropout_module): FairseqDropout()
+            (activation_dropout_module): FairseqDropout()
+            (activation_fn_approx): IntGELU()
+            (input_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -17.96, Act_max: 26.97)
+            (self_attn): MultiheadAttention(
+              (dropout_module): FairseqDropout()
+              (k_proj): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+              (v_proj): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+              (q_proj): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+              (k_proj_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -11.63, Act_max: 12.02)
+              (v_proj_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -6.77, Act_max: 6.45)
+              (q_proj_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -12.13, Act_max: 11.86)
+              (softmax): IntSoftmax(
+                (act): QuantAct(activation_bit=16, quant_mode: symmetric, Act_min: 2161680.50, Act_max: 2321938240241664.00)
+              )
+              (attn_probs_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: 0.00, Act_max: 0.00)
+              (attn_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -4.31, Act_max: 4.12)
+              (out_proj): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+            )
+            (pre_self_attn_layer_norm_act): QuantAct(activation_bit=22, quant_mode: symmetric, Act_min: -18.13, Act_max: 26.55)
+            (self_attn_layer_norm): IntLayerNorm(
+              (activation): QuantAct(activation_bit=32, quant_mode: none, Act_min: 0.00, Act_max: 0.00)
+            )
+            (fc1_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -19.84, Act_max: 27.05)
+            (fc2_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -0.17, Act_max: 26.02)
+            (fc1): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+            (fc2): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+            (pre_final_layer_norm_act): QuantAct(activation_bit=22, quant_mode: symmetric, Act_min: -35.82, Act_max: 655.70)
+            (final_layer_norm): IntLayerNorm(
+              (activation): QuantAct(activation_bit=32, quant_mode: none, Act_min: 0.00, Act_max: 0.00)
+            )
+          )
+          (8): TransformerSentenceEncoderLayer(
+            (dropout_module): FairseqDropout()
+            (activation_dropout_module): FairseqDropout()
+            (activation_fn_approx): IntGELU()
+            (input_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -15.31, Act_max: 27.11)
+            (self_attn): MultiheadAttention(
+              (dropout_module): FairseqDropout()
+              (k_proj): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+              (v_proj): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+              (q_proj): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+              (k_proj_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -14.29, Act_max: 12.34)
+              (v_proj_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -4.59, Act_max: 12.93)
+              (q_proj_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -12.39, Act_max: 13.21)
+              (softmax): IntSoftmax(
+                (act): QuantAct(activation_bit=16, quant_mode: symmetric, Act_min: 1303558.75, Act_max: 1399905801207808.00)
+              )
+              (attn_probs_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: 0.00, Act_max: 0.00)
+              (attn_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -3.40, Act_max: 9.71)
+              (out_proj): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+            )
+            (pre_self_attn_layer_norm_act): QuantAct(activation_bit=22, quant_mode: symmetric, Act_min: -16.04, Act_max: 27.08)
+            (self_attn_layer_norm): IntLayerNorm(
+              (activation): QuantAct(activation_bit=32, quant_mode: none, Act_min: 0.00, Act_max: 0.00)
+            )
+            (fc1_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -16.35, Act_max: 27.50)
+            (fc2_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -0.17, Act_max: 88.30)
+            (fc1): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+            (fc2): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+            (pre_final_layer_norm_act): QuantAct(activation_bit=22, quant_mode: symmetric, Act_min: -19.01, Act_max: 1233.51)
+            (final_layer_norm): IntLayerNorm(
+              (activation): QuantAct(activation_bit=32, quant_mode: none, Act_min: 0.00, Act_max: 0.00)
+            )
+          )
+          (9): TransformerSentenceEncoderLayer(
+            (dropout_module): FairseqDropout()
+            (activation_dropout_module): FairseqDropout()
+            (activation_fn_approx): IntGELU()
+            (input_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -13.98, Act_max: 27.22)
+            (self_attn): MultiheadAttention(
+              (dropout_module): FairseqDropout()
+              (k_proj): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+              (v_proj): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+              (q_proj): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+              (k_proj_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -11.57, Act_max: 11.04)
+              (v_proj_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -10.55, Act_max: 4.20)
+              (q_proj_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -11.98, Act_max: 12.82)
+              (softmax): IntSoftmax(
+                (act): QuantAct(activation_bit=16, quant_mode: symmetric, Act_min: 2101085.50, Act_max: 2256232488370176.00)
+              )
+              (attn_probs_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: 0.00, Act_max: 0.00)
+              (attn_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -6.06, Act_max: 2.16)
+              (out_proj): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+            )
+            (pre_self_attn_layer_norm_act): QuantAct(activation_bit=22, quant_mode: symmetric, Act_min: -13.94, Act_max: 27.22)
+            (self_attn_layer_norm): IntLayerNorm(
+              (activation): QuantAct(activation_bit=32, quant_mode: none, Act_min: 0.00, Act_max: 0.00)
+            )
+            (fc1_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -14.73, Act_max: 27.86)
+            (fc2_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -0.17, Act_max: 47.74)
+            (fc1): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+            (fc2): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+            (pre_final_layer_norm_act): QuantAct(activation_bit=22, quant_mode: symmetric, Act_min: -14.50, Act_max: 617.23)
+            (final_layer_norm): IntLayerNorm(
+              (activation): QuantAct(activation_bit=32, quant_mode: none, Act_min: 0.00, Act_max: 0.00)
+            )
+          )
+          (10): TransformerSentenceEncoderLayer(
+            (dropout_module): FairseqDropout()
+            (activation_dropout_module): FairseqDropout()
+            (activation_fn_approx): IntGELU()
+            (input_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -13.20, Act_max: 27.53)
+            (self_attn): MultiheadAttention(
+              (dropout_module): FairseqDropout()
+              (k_proj): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+              (v_proj): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+              (q_proj): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+              (k_proj_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -11.97, Act_max: 10.65)
+              (v_proj_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -11.17, Act_max: 6.52)
+              (q_proj_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -11.81, Act_max: 10.48)
+              (softmax): IntSoftmax(
+                (act): QuantAct(activation_bit=16, quant_mode: symmetric, Act_min: 2337804.00, Act_max: 2510198467985408.00)
+              )
+              (attn_probs_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: 0.00, Act_max: 0.00)
+              (attn_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -3.58, Act_max: 2.10)
+              (out_proj): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+            )
+            (pre_self_attn_layer_norm_act): QuantAct(activation_bit=22, quant_mode: symmetric, Act_min: -12.89, Act_max: 27.50)
+            (self_attn_layer_norm): IntLayerNorm(
+              (activation): QuantAct(activation_bit=32, quant_mode: none, Act_min: 0.00, Act_max: 0.00)
+            )
+            (fc1_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -14.46, Act_max: 27.56)
+            (fc2_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -0.17, Act_max: 18.21)
+            (fc1): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+            (fc2): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+            (pre_final_layer_norm_act): QuantAct(activation_bit=22, quant_mode: symmetric, Act_min: -18.34, Act_max: 341.68)
+            (final_layer_norm): IntLayerNorm(
+              (activation): QuantAct(activation_bit=32, quant_mode: none, Act_min: 0.00, Act_max: 0.00)
+            )
+          )
+          (11): TransformerSentenceEncoderLayer(
+            (dropout_module): FairseqDropout()
+            (activation_dropout_module): FairseqDropout()
+            (activation_fn_approx): IntGELU()
+            (input_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -15.12, Act_max: 25.94)
+            (self_attn): MultiheadAttention(
+              (dropout_module): FairseqDropout()
+              (k_proj): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+              (v_proj): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+              (q_proj): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+              (k_proj_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -9.11, Act_max: 11.26)
+              (v_proj_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -4.44, Act_max: 4.34)
+              (q_proj_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -13.07, Act_max: 12.27)
+              (softmax): IntSoftmax(
+                (act): QuantAct(activation_bit=16, quant_mode: symmetric, Act_min: 2149930.25, Act_max: 2308495529476096.00)
+              )
+              (attn_probs_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: 0.00, Act_max: 0.00)
+              (attn_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -3.30, Act_max: 3.21)
+              (out_proj): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+            )
+            (pre_self_attn_layer_norm_act): QuantAct(activation_bit=22, quant_mode: symmetric, Act_min: -14.87, Act_max: 25.87)
+            (self_attn_layer_norm): IntLayerNorm(
+              (activation): QuantAct(activation_bit=32, quant_mode: none, Act_min: 0.00, Act_max: 0.00)
+            )
+            (fc1_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -16.04, Act_max: 24.98)
+            (fc2_act): QuantAct(activation_bit=8, quant_mode: symmetric, Act_min: -0.17, Act_max: 7.81)
+            (fc1): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+            (fc2): (QuantLinear() weight_bit=8, quant_mode=symmetric)
+            (pre_final_layer_norm_act): QuantAct(activation_bit=22, quant_mode: symmetric, Act_min: -44.81, Act_max: 55.94)
+            (final_layer_norm): IntLayerNorm(
+              (activation): QuantAct(activation_bit=32, quant_mode: none, Act_min: 0.00, Act_max: 0.00)
+            )
+          )
+        )
+        (emb_layer_norm): IntLayerNorm(
+          (activation): QuantAct(activation_bit=32, quant_mode: none, Act_min: 0.00, Act_max: 0.00)
+        )
+      )
+      (lm_head): RobertaLMHead(
+        (dense): Linear(in_features=768, out_features=768, bias=True)
+        (layer_norm): LayerNorm((768,), eps=1e-05, elementwise_affine=True)
+      )
+    )
+    (classification_heads): ModuleDict(
+      (sentence_classification_head): RobertaClassificationHead(
+        (dense): Linear(in_features=768, out_features=768, bias=True)
+        (dropout): Dropout(p=0.0, inplace=False)
+        (out_proj): Linear(in_features=768, out_features=2, bias=True)
+      )
+    )
+  )
+) 
+odict_keys(['activation_fn_approx.input_scaling_factor'
+'input_act.x_min'
+'input_act.x_max'
+'input_act.act_scaling_factor'
+'self_attn.k_proj.weight'
+'self_attn.k_proj.bias'
+'self_attn.k_proj.fc_scaling_factor'
+'self_attn.k_proj.weight_integer'
+'self_attn.k_proj.bias_integer'
+'self_attn.v_proj.weight'
+'self_attn.v_proj.bias'
+'self_attn.v_proj.fc_scaling_factor'
+'self_attn.v_proj.weight_integer'
+'self_attn.v_proj.bias_integer'
+'self_attn.q_proj.weight'
+'self_attn.q_proj.bias'
+'self_attn.q_proj.fc_scaling_factor'
+'self_attn.q_proj.weight_integer'
+'self_attn.q_proj.bias_integer'
+'self_attn.k_proj_act.x_min'
+'self_attn.k_proj_act.x_max'
+'self_attn.k_proj_act.act_scaling_factor'
+'self_attn.v_proj_act.x_min'
+'self_attn.v_proj_act.x_max'
+'self_attn.v_proj_act.act_scaling_factor'
+'self_attn.q_proj_act.x_min'
+'self_attn.q_proj_act.x_max'
+'self_attn.q_proj_act.act_scaling_factor'
+'self_attn.softmax.act.x_min'
+'self_attn.softmax.act.x_max'
+'self_attn.softmax.act.act_scaling_factor'
+'self_attn.attn_probs_act.x_min'
+'self_attn.attn_probs_act.x_max'
+'self_attn.attn_probs_act.act_scaling_factor'
+'self_attn.attn_act.x_min'
+'self_attn.attn_act.x_max'
+'self_attn.attn_act.act_scaling_factor'
+'self_attn.out_proj.weight'
+'self_attn.out_proj.bias'
+'self_attn.out_proj.fc_scaling_factor'
+'self_attn.out_proj.weight_integer'
+'self_attn.out_proj.bias_integer'
+'pre_self_attn_layer_norm_act.x_min'
+'pre_self_attn_layer_norm_act.x_max'
+'pre_self_attn_layer_norm_act.act_scaling_factor'
+'self_attn_layer_norm.weight'
+'self_attn_layer_norm.bias'
+'self_attn_layer_norm.shift'
+'self_attn_layer_norm.activation.x_min'
+'self_attn_layer_norm.activation.x_max'
+'self_attn_layer_norm.activation.act_scaling_factor'
+'fc1_act.x_min'
+'fc1_act.x_max'
+'fc1_act.act_scaling_factor'
+'fc2_act.x_min'
+'fc2_act.x_max'
+'fc2_act.act_scaling_factor'
+'fc1.weight'
+'fc1.bias'
+'fc1.fc_scaling_factor'
+'fc1.weight_integer'
+'fc1.bias_integer'
+'fc2.weight'
+'fc2.bias'
+'fc2.fc_scaling_factor'
+'fc2.weight_integer'
+'fc2.bias_integer'
+'pre_final_layer_norm_act.x_min'
+'pre_final_layer_norm_act.x_max'
+'pre_final_layer_norm_act.act_scaling_factor'
+'final_layer_norm.weight'
+'final_layer_norm.bias'
+'final_layer_norm.shift'
+'final_layer_norm.activation.x_min'
+'final_layer_norm.activation.x_max'
+'final_layer_norm.activation.act_scaling_factor']) 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
+torch.FloatTensor 
