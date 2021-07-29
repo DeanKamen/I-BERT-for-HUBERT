@@ -244,7 +244,6 @@ class MultiheadAttention(nn.Module):
         if self.self_attention:
             print("used in inference: 2")
             q, q_scaling_factor = self.q_proj(query, query_scale)
-            exit()
             k, k_scaling_factor = self.k_proj(query, query_scale)
             v, v_scaling_factor = self.v_proj(query, query_scale)
             

@@ -16,7 +16,7 @@ from fairseq import utils
 import logging
 
 #HUNTER's imports
-from model_weights_to_binary import exportGeneric3d
+from model_weights_to_binary import exportGeneric3d, exportGeneric2d
 
 logger = logging.getLogger(__name__)
 
@@ -384,10 +384,6 @@ class QuantLinear(Module):
                 self.bias_bit, False, bias_scaling_factor)
         prev_act_scaling_factor = prev_act_scaling_factor.view(1, -1)
         x_int = x / prev_act_scaling_factor
-
-        print("im linear", F.linear(x_int, weight=self.weight_integer, bias=self.bias_integer)\
-                * bias_scaling_factor)
-
         return F.linear(x_int, weight=self.weight_integer, bias=self.bias_integer) \
                 * bias_scaling_factor, bias_scaling_factor
 
@@ -421,7 +417,6 @@ class IntLayerNorm(Module):
         self.register_buffer('shift', torch.zeros(1))
         self.output_bit = output_bit
         self.dim_sqrt = None
-
 
         self.activation = QuantAct(output_bit, quant_mode=self.quant_mode)
         if self.quant_mode == "none":
@@ -463,6 +458,7 @@ class IntLayerNorm(Module):
         return var_int
 
     def forward(self, x, scaling_factor=None, exponents=None):
+        #exportGeneric3d(x.cpu().detach().numpy(), "intlayernorm_layer0")
         if self.quant_mode == 'none':
             mean = x.mean(axis=2, keepdim=True)
             y = x - mean
@@ -567,6 +563,8 @@ class IntGELU(Module):
         return y_int, scaling_factor
 
     def forward(self, x, scaling_factor=None):
+        #exportGeneric3d(x.cpu().detach().numpy(), "intgelu_layer0")
+        #exportGeneric2d(scaling_factor.cpu().detach().numpy(), "intgelu_sf_layer0")
         if self.quant_mode == 'none':
             return self.activation_fn(x), None
 
@@ -581,6 +579,7 @@ class IntGELU(Module):
         x_int = x_int * (sigmoid_int + shift_int)
         scaling_factor = scaling_factor * sigmoid_scaling_factor / 2
 
+        print(x_int * scaling_factor)
         return x_int * scaling_factor, scaling_factor
 
 

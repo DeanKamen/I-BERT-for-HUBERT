@@ -197,8 +197,9 @@ class TransformerSentenceEncoderLayer(nn.Module):
 
         # FC1
         x, x_scaling_factor = self.fc1(x, x_scaling_factor)
-
+        print("GELU")
         x, x_scaling_factor = self.activation_fn_approx(x, x_scaling_factor)
+        exit()
         x = self.activation_dropout_module(x)
 
         # Pre FC2 activation

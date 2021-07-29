@@ -66,3 +66,26 @@ def exportGeneric3d(numpy_array, name):
     info_array.append(numpy_array.shape[2])
     info_array.tofile(f)
     f.write(numpy_array.tobytes())
+
+def exportGeneric2d(numpy_array, name):
+    print("exporting a 2d binfile")
+    f = open(f'{name}.bin', 'w+b')
+    print(numpy_array.shape)
+    assert(numpy_array.ndim==2 or numpy_array.ndim==1)
+    #note that I assume that a 1d array is a row because that is 
+    #conventionally shape 0. Even though it is more convienient to
+    #make a 1d a row vector
+    name_of_idx = "generic"
+    length = array.array('i', [len(name_of_idx)])
+    length.tofile(f) #length of name
+    name_of_idx = bytearray(name_of_idx, encoding ='utf-8')
+    f.write(name_of_idx) #
+
+    info_array = array.array("i")
+    info_array.append(numpy_array.shape[0])
+    if(numpy_array.ndim == 1):
+        info_array.append(1)
+    else:
+        info_array.append(numpy_array.shape[1])
+    info_array.tofile(f)
+    f.write(numpy_array.tobytes())
