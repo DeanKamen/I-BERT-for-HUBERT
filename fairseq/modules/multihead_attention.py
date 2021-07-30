@@ -57,7 +57,6 @@ class MultiheadAttention(nn.Module):
         self.kdim = kdim if kdim is not None else embed_dim
         self.vdim = vdim if vdim is not None else embed_dim
         self.qkv_same_dim = self.kdim == embed_dim and self.vdim == embed_dim
-
         self.onnx_trace = False
         self.tpu = False
 
@@ -421,6 +420,7 @@ class MultiheadAttention(nn.Module):
         attn_weights_float, attn_probs_scaling_factor = \
                 self.softmax(attn_weights, attn_weights_scaling_factor)
         attn_weights = attn_weights_float.type_as(attn_weights)
+
         attn_probs = self.dropout_module(attn_weights)
 
         assert v is not None

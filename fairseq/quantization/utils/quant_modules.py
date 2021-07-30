@@ -227,7 +227,6 @@ class QuantAct(Module):
         if self.running_stat:
             if not self.percentile:
                 if not self.per_channel:
-                    #print("xact", x_act)
                     x_min = x_act.data.min()
                     x_max = x_act.data.max()
                 else:
@@ -247,8 +246,6 @@ class QuantAct(Module):
                 self.x_min = torch.min(self.x_min, x_min)
                 self.x_max = torch.max(self.x_max, x_max)
             else:
-                #print("xmin xmax", self.x_min, self.x_max)
-                #print("local xmin xmax", x_min, x_max)
                 self.x_min = self.x_min * self.act_range_momentum +\
                         x_min * (1 - self.act_range_momentum)
                 self.x_max = self.x_max * self.act_range_momentum +\
@@ -262,12 +259,9 @@ class QuantAct(Module):
         x_min = self.x_min if specified_min is None else specified_min
         x_max = self.x_max if specified_max is None else specified_max
 
-        #print("xmin xmax 2", self.x_min, self.x_max)
-        #print("local xmin xmax 2", x_min, x_max)
         self.act_scaling_factor = symmetric_linear_quantization_params(
             self.activation_bit, x_min, x_max, 
             per_channel=self.per_channel)
-        #print("act scaling factor", self.act_scaling_factor)
 
         if pre_act_scaling_factor is None:
             # this is for the input quantization 
@@ -549,7 +543,6 @@ class IntGELU(Module):
         with torch.no_grad():
             b_int = torch.floor(self.coeff[1] / scaling_factor)
             c_int = torch.floor(self.coeff[2] / scaling_factor ** 2)
-
         with torch.no_grad():
             sign = torch.sign(x_int)
         abs_int = torch.abs(x_int)
@@ -559,7 +552,6 @@ class IntGELU(Module):
         scaling_factor = scaling_factor ** 2 * self.coeff[0]
         y_int = floor_ste.apply(y_int / 2 ** self.n)
         scaling_factor = scaling_factor * 2 ** self.n
-        
         return y_int, scaling_factor
 
     def forward(self, x, scaling_factor=None):
@@ -573,13 +565,10 @@ class IntGELU(Module):
 
         x_int = x / scaling_factor
         sigmoid_int, sigmoid_scaling_factor = self.int_erf(x_int, scaling_factor / self.k)
-
         shift_int = torch.floor(1. / sigmoid_scaling_factor)
 
         x_int = x_int * (sigmoid_int + shift_int)
         scaling_factor = scaling_factor * sigmoid_scaling_factor / 2
-
-        print(x_int * scaling_factor)
         return x_int * scaling_factor, scaling_factor
 
 
