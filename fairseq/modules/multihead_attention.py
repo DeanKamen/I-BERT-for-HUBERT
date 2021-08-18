@@ -19,6 +19,9 @@ from fairseq.modules.quant_noise import quant_noise
 from fairseq.quantization.utils.quant_modules import *
 from fairseq.quantization.utils.quant_utils import *
 
+#HUNTER's imports
+from model_weights_to_binary import exportGeneric3d, exportGeneric2d
+
 @with_incremental_state
 class MultiheadAttention(nn.Module):
     """Multi-headed attention.
@@ -100,14 +103,12 @@ class MultiheadAttention(nn.Module):
         self.v_proj_act = QuantAct(self.act_bit, quant_mode=self.quant_mode)
         self.q_proj_act = QuantAct(self.act_bit, quant_mode=self.quant_mode)
 
-        #hunters current window frame
         self.softmax = IntSoftmax(self.softmax_output_bit, 
                                   quant_mode=self.quant_mode,
                                   force_dequant=self.force_dequant)
 
         self.attn_probs_act = QuantAct(self.act_bit, quant_mode=self.quant_mode)
         self.attn_act = QuantAct(self.act_bit, quant_mode=self.quant_mode)
-        #end hunters current window
         
         out_proj = QuantLinear(self.fc_weight_bit, bias_bit=self.fc_bias_bit, 
                                quant_mode=self.quant_mode, per_channel=True)
@@ -187,6 +188,13 @@ class MultiheadAttention(nn.Module):
                 weights for each head. Implies *need_weights*. Default:
                 return the average attention weights over all heads.
         """
+        #exportGeneric3d(query.cpu().detach().numpy(), "q_multihead0")
+        #exportGeneric3d(key.cpu().detach().numpy(), "v_multihead0")
+        #exportGeneric3d(value.cpu().detach().numpy(), "k_multihead0")
+        #exportGeneric2d(query_scale.cpu().detach().numpy(), "qsf_multihead0")
+        #exportGeneric2d(key_scale.cpu().detach().numpy(), "vsf_multihead0")
+        #exportGeneric2d(value_scale.cpu().detach().numpy(), "ksf_multihead0")
+
         if need_head_weights:
             need_weights = True
 
@@ -241,11 +249,9 @@ class MultiheadAttention(nn.Module):
             saved_state = None
         
         if self.self_attention:
-            print("used in inference: 2")
             q, q_scaling_factor = self.q_proj(query, query_scale)
             k, k_scaling_factor = self.k_proj(query, query_scale)
             v, v_scaling_factor = self.v_proj(query, query_scale)
-            
 
         elif self.encoder_decoder_attention:
             # encoder-decoder attention
@@ -266,6 +272,7 @@ class MultiheadAttention(nn.Module):
 
         q, q_scaling_factor = self.q_proj_act(q, q_scaling_factor)
         k, k_scaling_factor = self.k_proj_act(k, k_scaling_factor)
+        #exportGeneric3d(k.cpu().detach().numpy(), "kpa_verification")
         v, v_scaling_factor = self.v_proj_act(v, v_scaling_factor)
 
         q *= self.scaling
@@ -294,15 +301,14 @@ class MultiheadAttention(nn.Module):
             .view(tgt_len, bsz * self.num_heads, self.head_dim)
             .transpose(0, 1)
         )
+        
         if k is not None:
-            print("used in inference: 6")
             k = (
                 k.contiguous()
                 .view(-1, bsz * self.num_heads, self.head_dim)
                 .transpose(0, 1)
             )
         if v is not None:
-            print("used in inference: 7")
             v = (
                 v.contiguous()
                 .view(-1, bsz * self.num_heads, self.head_dim)
@@ -384,12 +390,20 @@ class MultiheadAttention(nn.Module):
 
         ####################################################################################
 
-        attn_weights = torch.bmm(q, k.transpose(1, 2)) 
+        
+        #exportGeneric3d(q.cpu().detach().numpy(), "qmm_verification")
+        #exportGeneric3d(k.cpu().detach().numpy(), "kmm_verification")
+        #exportGeneric3d((k.transpose(1, 2)).cpu().detach().numpy(), "ktranposed_verification")
+        attn_weights = torch.bmm(q, k.transpose(1, 2))
+        #exportGeneric3d(attn_weights.cpu().detach().numpy(), "aw_verification")
+        
         if q_scaling_factor is not None:
             # attn_weights / attn_weights_scaling_factor is integer
             attn_weights_scaling_factor = q_scaling_factor * k_scaling_factor
         else:
             attn_weights_scaling_factor = None
+
+        atn_cpy = attn_weights
         attn_weights = MultiheadAttention.apply_sparse_mask(attn_weights, tgt_len, src_len, bsz)
 
         assert list(attn_weights.size()) == [bsz * self.num_heads, tgt_len, src_len]
@@ -422,9 +436,9 @@ class MultiheadAttention(nn.Module):
         attn_weights = attn_weights_float.type_as(attn_weights)
 
         attn_probs = self.dropout_module(attn_weights)
-
+        
         assert v is not None
-        attn = torch.bmm(attn_probs, v) 
+        attn = torch.bmm(attn_probs, v)
         if q_scaling_factor is not None:
             # attn / attn_scaling_factor is integer
             attn_scaling_factor = q_scaling_factor * k_scaling_factor
@@ -435,7 +449,7 @@ class MultiheadAttention(nn.Module):
             # when ONNX tracing a single decoder step (sequence length == 1)
             # the transpose is a no-op copy before view, thus unnecessary
             attn = attn.contiguous().view(tgt_len, bsz, embed_dim)
-        else:
+        else: 
             attn = attn.transpose(0, 1).contiguous().view(tgt_len, bsz, embed_dim)
 
         attn, attn_scaling_factor = self.attn_act(attn, attn_scaling_factor) 

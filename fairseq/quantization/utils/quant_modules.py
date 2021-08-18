@@ -16,7 +16,7 @@ from fairseq import utils
 import logging
 
 #HUNTER's imports
-from model_weights_to_binary import exportGeneric3d, exportGeneric2d
+from model_weights_to_binary import exportGeneric3d, exportGeneric2d, exportTrainedWeights
 
 logger = logging.getLogger(__name__)
 
@@ -221,8 +221,8 @@ class QuantAct(Module):
                 identity=None, 
                 identity_scaling_factor=None,
                 specified_min=None,
-                specified_max=None):
-        # collect runnng stats
+                specified_max=None):    
+      
         x_act = x if identity is None else identity + x
         if self.running_stat:
             if not self.percentile:
@@ -262,6 +262,7 @@ class QuantAct(Module):
         self.act_scaling_factor = symmetric_linear_quantization_params(
             self.activation_bit, x_min, x_max, 
             per_channel=self.per_channel)
+        #exportGeneric2d(self.act_scaling_factor.cpu().detach().numpy(), "actsf_verification")
 
         if pre_act_scaling_factor is None:
             # this is for the input quantization 
@@ -274,7 +275,9 @@ class QuantAct(Module):
                     self.act_scaling_factor, 
                     identity, identity_scaling_factor)
 
+        #exportGeneric3d(quant_act_int.cpu().detach().numpy(), "qai_verification")
         correct_output_scale = self.act_scaling_factor.view(-1)
+        #exportGeneric3d((quant_act_int * correct_output_scale).cpu().detach().numpy(), "out_verification")
         return quant_act_int * correct_output_scale, self.act_scaling_factor
 
 
@@ -344,8 +347,6 @@ class QuantLinear(Module):
         """
         using quantized weights to forward activation x
         """
-        #exportGeneric3d(x.cpu().detach().numpy(), "quantlinear_layer0")
-
         if self.quant_mode == 'none':
             return F.linear(x, weight=self.weight, bias=self.bias), None
             
@@ -365,19 +366,22 @@ class QuantLinear(Module):
         else:
             w_min = w_transform.min().expand(1)
             w_max = w_transform.max().expand(1)
+        #exportGeneric2d(w_transform.cpu().detach().numpy(), "weight_verification")
+        #exportGeneric2d(w_max.cpu().detach().numpy(), "wmax_verification")
+        #exportGeneric2d(w_min.cpu().detach().numpy(), "wmin_verification")
         self.fc_scaling_factor = symmetric_linear_quantization_params(
                 self.weight_bit, w_min, w_max, self.per_channel)
-        
+        #exportGeneric2d(self.fc_scaling_factor.cpu().detach().numpy(), "fc_verification")
         self.weight_integer = self.weight_function(
                 self.weight, self.weight_bit, self.percentile_mode, 
                 self.fc_scaling_factor)
-        
+        #exportGeneric2d(self.weight_integer.cpu().detach().numpy(), "wint_verification")
         bias_scaling_factor = self.fc_scaling_factor * prev_act_scaling_factor
-        
         self.bias_integer = self.weight_function(self.bias, 
                 self.bias_bit, False, bias_scaling_factor)
         prev_act_scaling_factor = prev_act_scaling_factor.view(1, -1)
         x_int = x / prev_act_scaling_factor
+        #exportGeneric2d(self.bias_integer.cpu().detach().numpy(), "bint_verification")
         return F.linear(x_int, weight=self.weight_integer, bias=self.bias_integer) \
                 * bias_scaling_factor, bias_scaling_factor
 
@@ -494,7 +498,6 @@ class IntLayerNorm(Module):
         y_int = y_int + bias_int
         scaling_factor = scaling_factor * self.weight
         x = y_int * scaling_factor
-
         return x, scaling_factor
 
 
@@ -542,14 +545,24 @@ class IntGELU(Module):
     def int_erf(self, x_int, scaling_factor):
         with torch.no_grad():
             b_int = torch.floor(self.coeff[1] / scaling_factor)
+            print('%.10f'%self.coeff[1])
+            #exportGeneric2d((self.coeff[1] / scaling_factor).cpu().detach().numpy(), "bintprefloor_verification")
+            #exportGeneric2d(b_int.cpu().detach().numpy(), "bintfloor_verification")
             c_int = torch.floor(self.coeff[2] / scaling_factor ** 2)
+            #exportGeneric2d(c_int.cpu().detach().numpy(), "cintfloor_verification")
         with torch.no_grad():
             sign = torch.sign(x_int)
         abs_int = torch.abs(x_int)
         abs_int = torch.min(abs_int, -b_int)
+        #exportGeneric3d(abs_int.cpu().detach().numpy(), "absint_verification")
+        #exportGeneric2d(b_int.cpu().detach().numpy(), "bint_verification")
+        #exportGeneric2d(c_int.cpu().detach().numpy(), "cint_verification")
+        #exportGeneric3d((abs_int + b_int).cpu().detach().numpy(), "yadd_verification")
+        #exportGeneric3d(((abs_int + b_int) ** 2).cpu().detach().numpy(), "y2_verification")
         y_int = (abs_int + b_int) ** 2 + c_int
         y_int = sign * y_int
         scaling_factor = scaling_factor ** 2 * self.coeff[0]
+        #exportGeneric3d(y_int.cpu().detach().numpy(), "y_verification")
         y_int = floor_ste.apply(y_int / 2 ** self.n)
         scaling_factor = scaling_factor * 2 ** self.n
         return y_int, scaling_factor
@@ -557,6 +570,7 @@ class IntGELU(Module):
     def forward(self, x, scaling_factor=None):
         #exportGeneric3d(x.cpu().detach().numpy(), "intgelu_layer0")
         #exportGeneric2d(scaling_factor.cpu().detach().numpy(), "intgelu_sf_layer0")
+
         if self.quant_mode == 'none':
             return self.activation_fn(x), None
 
@@ -565,6 +579,7 @@ class IntGELU(Module):
 
         x_int = x / scaling_factor
         sigmoid_int, sigmoid_scaling_factor = self.int_erf(x_int, scaling_factor / self.k)
+        #exportGeneric3d(sigmoid_int.cpu().detach().numpy(), "sigma_verification")
         shift_int = torch.floor(1. / sigmoid_scaling_factor)
 
         x_int = x_int * (sigmoid_int + shift_int)

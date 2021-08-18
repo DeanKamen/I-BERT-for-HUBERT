@@ -33,8 +33,8 @@ def exportTrainedWeights():
         idx = bytearray(idx, encoding ='utf-8')
         f.write(idx)
         if len(x.shape) == 1:
-            info_array.append(x.shape[0])
             info_array.append(1)
+            info_array.append(x.shape[0])
         else: #we only do a max of two dimentions
             info_array.append(x.shape[0])
             info_array.append(x.shape[1])
@@ -82,10 +82,11 @@ def exportGeneric2d(numpy_array, name):
     f.write(name_of_idx) #
 
     info_array = array.array("i")
-    info_array.append(numpy_array.shape[0])
     if(numpy_array.ndim == 1):
         info_array.append(1)
+        info_array.append(numpy_array.shape[0]) #we assume a 1d shape is a row
     else:
+        info_array.append(numpy_array.shape[0])
         info_array.append(numpy_array.shape[1])
     info_array.tofile(f)
     f.write(numpy_array.tobytes())

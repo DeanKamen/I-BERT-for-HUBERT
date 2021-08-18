@@ -8,6 +8,8 @@ import decimal
 from decimal import Decimal
 import time
 
+from model_weights_to_binary import exportGeneric3d, exportGeneric2d, exportTrainedWeights
+
 def get_percentile_min_max(input, lower_percentile, upper_percentile, output_tensor=False):
     """
     Calculate the percentile max and min values in a given tensor
@@ -239,16 +241,13 @@ class fixedpoint_mul(Function):
             if identity is not None:
                 # needs addition of identity activation
                 wx_int = torch.round(identity / identity_scaling_factor)
-
                 _A = identity_scaling_factor.type(torch.double)
                 _B = (z_scaling_factor.type(torch.float)).type(torch.double)
                 new_scale = _A / _B
                 new_scale = reshape(new_scale)
-
                 m1, e1 = batch_frexp(new_scale)
                 output1 = wx_int.type(torch.double) * m1.type(torch.double)
                 output1 = torch.round(output1 / (2.0**e1))
-
                 output = output1 + output
 
             if bit_num in [4, 8, 16]:

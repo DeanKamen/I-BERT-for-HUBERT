@@ -19,6 +19,9 @@ from fairseq.modules.fairseq_dropout import FairseqDropout
 
 from fairseq.quantization.utils.quant_modules import *
 
+#HUNTER's imports
+from model_weights_to_binary import exportGeneric3d, exportGeneric2d
+
 class TransformerSentenceEncoderLayer(nn.Module):
     """
     Implements a Transformer Encoder Layer used in BERT/XLM style pre-trained
@@ -157,8 +160,6 @@ class TransformerSentenceEncoderLayer(nn.Module):
         modules similar to the original Transformer implementation.
         """
         self.once = False
-
-        
         #HUNTERS MODS
         #if(not self.once):
         #    self.once=True
@@ -167,8 +168,12 @@ class TransformerSentenceEncoderLayer(nn.Module):
         #np.savez("export/layer0input.npz", layer0 = x.cpu().detach().numpy())
         #END HUNTERS MODS
         
+        #exportGeneric3d(x.cpu().detach().numpy(), "tsel_input")
+
         x, x_scaling_factor = self.input_act(x, x_scaling_factor)
         residual, residual_scaling_factor = x, x_scaling_factor
+        #exportGeneric3d(x.cpu().detach().numpy(), "act_verification")
+
         x, x_scaling_factor, attn = self.self_attn(
             query=x,
             key=x,
@@ -181,34 +186,41 @@ class TransformerSentenceEncoderLayer(nn.Module):
             attn_mask=self_attn_mask,
         )
         x = self.dropout_module(x)
-
-        # Pre LN1 activation (+ residual addition)
+        #exportGeneric3d(x.cpu().detach().numpy(), "multihead_verification")
+        
         x, x_scaling_factor = self.pre_self_attn_layer_norm_act(
                 x, x_scaling_factor,
                 identity=residual,
                 identity_scaling_factor=residual_scaling_factor)
-
+        
         # LN1
         x, x_scaling_factor = self.self_attn_layer_norm(
                 x, x_scaling_factor)
+        #exportGeneric3d(x.cpu().detach().numpy(), "ln1_verification")
         # Pre FC1 activation
+        print("smd")
         x, x_scaling_factor = self.fc1_act(x, x_scaling_factor)
-        residual, residual_scaling_factor = x, x_scaling_factor
+        #exportGeneric3d(x.cpu().detach().numpy(), "fc1a_verification")
+        #exportGeneric2d(x_scaling_factor.cpu().detach().numpy(), "fc1asf_verification")
 
+        residual, residual_scaling_factor = x, x_scaling_factor
+               
         # FC1
         x, x_scaling_factor = self.fc1(x, x_scaling_factor)
-        print("GELU")
+        exportGeneric3d(x.cpu().detach().numpy(), "fc1_verification")
+        exportGeneric2d(x_scaling_factor.cpu().detach().numpy(), "fc1sf_verification")
         x, x_scaling_factor = self.activation_fn_approx(x, x_scaling_factor)
-        exit()
         x = self.activation_dropout_module(x)
-
+        exportGeneric3d(x.cpu().detach().numpy(), "gelu_verification")
+        exit()
+        
         # Pre FC2 activation
         x, x_scaling_factor = self.fc2_act(x, x_scaling_factor) 
-
+        
         # FC2
         x, x_scaling_factor = self.fc2(x, x_scaling_factor)
-
         x = self.dropout_module(x)
+        exportGeneric3d(x.cpu().detach().numpy(), "fc2_verification")
 
         # Pre LN2 activation (+ residual addition)
         x, x_scaling_factor = self.pre_final_layer_norm_act(
@@ -219,4 +231,5 @@ class TransformerSentenceEncoderLayer(nn.Module):
         # LN2
         x, x_scaling_factor = self.final_layer_norm(x, x_scaling_factor)
 
+        exportGeneric3d(x.cpu().detach().numpy(), "final_x_verification")
         return x, x_scaling_factor, attn
