@@ -17,6 +17,7 @@ import logging
 
 #HUNTER's imports
 from model_weights_to_binary import exportGeneric3d, exportGeneric2d, exportTrainedWeights
+from np_to_h_lib import export_header
 
 logger = logging.getLogger(__name__)
 
@@ -221,8 +222,20 @@ class QuantAct(Module):
                 identity=None, 
                 identity_scaling_factor=None,
                 specified_min=None,
-                specified_max=None):    
-      
+                specified_max=None):   
+        #openCL HUBERT exports 
+        export_header(x.cpu().detach().numpy(), "qa_x_softmax")
+        if pre_act_scaling_factor is not None:
+            export_header(pre_act_scaling_factor.cpu().detach().numpy(), "qa_pasf_softmax") 
+        if identity is not None:
+            export_header(identity.cpu().detach().numpy(), "qa_identity_softmax")
+        if identity_scaling_factor is not None:
+            export_header(identity_scaling_factor.cpu().detach().numpy(), "qa_isf_softmax")
+        if specified_min is not None:
+            print(specified_min)
+        if specified_max is not None:
+            print(specified_max)
+        #end openCL HUBERT exports    
         x_act = x if identity is None else identity + x
         if self.running_stat:
             if not self.percentile:
@@ -640,14 +653,14 @@ class IntSoftmax(Module):
         x_int = torch.max(x_int, self.n * x0_int)
         q = floor_ste.apply(x_int / x0_int)
         r = x_int - x0_int * q
+        export_header(r.cpu().detach().numpy(), "softmax_int_exp_IP")
         exp_int, exp_scaling_factor = self.int_polynomial(r, scaling_factor)
+        export_header(exp_int.cpu().detach().numpy(), "softmax_int_poly")
         exp_int = torch.clamp(floor_ste.apply(exp_int * 2 ** (self.n - q)), min=0)
         scaling_factor = exp_scaling_factor / 2 ** self.n
         return exp_int, scaling_factor
 
     def forward(self, x, scaling_factor):
-        #exportGeneric3d(x.cpu().detach().numpy(), "softmax_layer0")
-
         if self.quant_mode == 'none':
             return utils.softmax(x, dim=-1, onnx_trace=False), None
 
@@ -656,11 +669,15 @@ class IntSoftmax(Module):
         x_int = x/ scaling_factor
         x_int_max, _ = x_int.max(dim=-1, keepdim=True)
         x_int = x_int - x_int_max
+        #export_header(x_int.cpu().detach().numpy(), "softmax_b4_int_exp")
         exp_int, exp_scaling_factor = self.int_exp(x_int, scaling_factor)
+        export_header(exp_int.cpu().detach().numpy(), "softmax_b4_act")
         exp, exp_scaling_factor = self.act(exp_int, exp_scaling_factor)
         exp_int = exp / exp_scaling_factor
         exp_int_sum = exp_int.sum(dim=-1, keepdim=True)
         factor = floor_ste.apply(2**32 / exp_int_sum)
         exp_int = floor_ste.apply(exp_int * factor / 2 ** (32 - self.output_bit))
         scaling_factor = 1 / 2 ** self.output_bit
+        export_header((exp_int * scaling_factor).cpu().detach().numpy(), "softmax_layer0_out")
+        exit()
         return exp_int * scaling_factor, scaling_factor
