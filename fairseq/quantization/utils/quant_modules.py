@@ -224,7 +224,7 @@ class QuantAct(Module):
                 specified_min=None,
                 specified_max=None):   
         #openCL HUBERT exports 
-        export_header(x.cpu().detach().numpy(), "qa_x_softmax")
+        #export_header(x.cpu().detach().numpy(), "qa_x_softmax")
         if pre_act_scaling_factor is not None:
             export_header(pre_act_scaling_factor.cpu().detach().numpy(), "qa_pasf_softmax") 
         if identity is not None:
@@ -250,6 +250,8 @@ class QuantAct(Module):
 
             # Initialization
             if torch.eq(self.x_min, self.x_max).all():
+                print(self.x_min, x_min)
+                print(self.x_max, x_max)
                 self.x_min = self.x_min + x_min
                 self.x_max = self.x_max + x_max
 
@@ -275,7 +277,6 @@ class QuantAct(Module):
         self.act_scaling_factor = symmetric_linear_quantization_params(
             self.activation_bit, x_min, x_max, 
             per_channel=self.per_channel)
-        #exportGeneric2d(self.act_scaling_factor.cpu().detach().numpy(), "actsf_verification")
 
         if pre_act_scaling_factor is None:
             # this is for the input quantization 
@@ -287,6 +288,7 @@ class QuantAct(Module):
                     self.activation_bit, self.quant_mode, 
                     self.act_scaling_factor, 
                     identity, identity_scaling_factor)
+            export_header(quant_act_int.cpu().detach().numpy(), "qa_fpm")
 
         #exportGeneric3d(quant_act_int.cpu().detach().numpy(), "qai_verification")
         correct_output_scale = self.act_scaling_factor.view(-1)
@@ -653,10 +655,9 @@ class IntSoftmax(Module):
         x_int = torch.max(x_int, self.n * x0_int)
         q = floor_ste.apply(x_int / x0_int)
         r = x_int - x0_int * q
-        export_header(r.cpu().detach().numpy(), "softmax_int_exp_IP")
         exp_int, exp_scaling_factor = self.int_polynomial(r, scaling_factor)
-        export_header(exp_int.cpu().detach().numpy(), "softmax_int_poly")
         exp_int = torch.clamp(floor_ste.apply(exp_int * 2 ** (self.n - q)), min=0)
+        #export_header(exp_int.cpu().detach().numpy(), "softmax_ip_exp1")
         scaling_factor = exp_scaling_factor / 2 ** self.n
         return exp_int, scaling_factor
 
@@ -671,13 +672,15 @@ class IntSoftmax(Module):
         x_int = x_int - x_int_max
         #export_header(x_int.cpu().detach().numpy(), "softmax_b4_int_exp")
         exp_int, exp_scaling_factor = self.int_exp(x_int, scaling_factor)
-        export_header(exp_int.cpu().detach().numpy(), "softmax_b4_act")
+        #export_header(exp_int.cpu().detach().numpy(), "softmax_b4_act")
         exp, exp_scaling_factor = self.act(exp_int, exp_scaling_factor)
+        #export_header(exp.cpu().detach().numpy(), "softmax_after_act")
         exp_int = exp / exp_scaling_factor
         exp_int_sum = exp_int.sum(dim=-1, keepdim=True)
         factor = floor_ste.apply(2**32 / exp_int_sum)
         exp_int = floor_ste.apply(exp_int * factor / 2 ** (32 - self.output_bit))
         scaling_factor = 1 / 2 ** self.output_bit
         export_header((exp_int * scaling_factor).cpu().detach().numpy(), "softmax_layer0_out")
+        print(scaling_factor)
         exit()
         return exp_int * scaling_factor, scaling_factor

@@ -8,7 +8,9 @@ import decimal
 from decimal import Decimal
 import time
 
+#Hunter's Imports
 from model_weights_to_binary import exportGeneric3d, exportGeneric2d, exportTrainedWeights
+from np_to_h_lib import export_header
 
 def get_percentile_min_max(input, lower_percentile, upper_percentile, output_tensor=False):
     """
@@ -229,14 +231,19 @@ class fixedpoint_mul(Function):
             ctx.z_scaling_factor = z_scaling_factor
 
             z_int = torch.round(pre_act / pre_act_scaling_factor) 
+            export_header(z_int.cpu().detach().numpy(), "fpm_round")
+
             _A = pre_act_scaling_factor.type(torch.double)
             _B = (z_scaling_factor.type(torch.float)).type(torch.double)
             new_scale = _A / _B
             new_scale = reshape(new_scale)
+            export_header(new_scale.cpu().detach().numpy(), "fpm_AdB")
+
             m, e = batch_frexp(new_scale)
 
             output = z_int.type(torch.double) * m.type(torch.double)
             output = torch.round( output / (2.0**e) )
+            export_header(output.cpu().detach().numpy(), "fpm_pidentity")
 
             if identity is not None:
                 # needs addition of identity activation
