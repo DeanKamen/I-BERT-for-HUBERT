@@ -8,7 +8,8 @@ def ndarray_to_str(x, brkt_op='{', brkt_cl='}', delim=','):
     s = brkt_op
     for i in range(nelem):
         if ndims <= 1:
-            s += str(x[i])
+            s += str(int(x[i])) #THIS INT RIGHT HERE: forces to print without decimal place. sometimes necessary.
+            #s += str(x[i])
             if i < nelem - 1:
                 s += delim + ' '
         else:
@@ -52,7 +53,7 @@ def h_footer(filename):
 
 def export_header(npa, filename):
     header = h_header(filename+".h")
-    s = ndarray_to_var(npa, 'const float', filename)
+    s = ndarray_to_var(npa, 'const int', filename)
     footer = h_footer(filename+".h")
 
     with open(filename+".h", 'w') as f:

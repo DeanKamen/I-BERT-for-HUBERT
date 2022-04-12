@@ -225,16 +225,17 @@ class QuantAct(Module):
                 specified_max=None):   
         #openCL HUBERT exports 
         #export_header(x.cpu().detach().numpy(), "qa_x_softmax")
-        if pre_act_scaling_factor is not None:
-            export_header(pre_act_scaling_factor.cpu().detach().numpy(), "qa_pasf_softmax") 
-        if identity is not None:
-            export_header(identity.cpu().detach().numpy(), "qa_identity_softmax")
-        if identity_scaling_factor is not None:
-            export_header(identity_scaling_factor.cpu().detach().numpy(), "qa_isf_softmax")
-        if specified_min is not None:
-            print(specified_min)
-        if specified_max is not None:
-            print(specified_max)
+        #if pre_act_scaling_factor is not None:
+        #    export_header(pre_act_scaling_factor.cpu().detach().numpy(), "qa_pasf_softmax") 
+            #print(pre_act_scaling_factor)
+        #if identity is not None:
+        #    export_header(identity.cpu().detach().numpy(), "qa_identity_softmax")
+        #if identity_scaling_factor is not None:
+        #    export_header(identity_scaling_factor.cpu().detach().numpy(), "qa_isf_softmax")
+        #if specified_min is not None:
+            #print(specified_min)
+        #if specified_max is not None:
+            #print(specified_max)
         #end openCL HUBERT exports    
         x_act = x if identity is None else identity + x
         if self.running_stat:
@@ -250,8 +251,6 @@ class QuantAct(Module):
 
             # Initialization
             if torch.eq(self.x_min, self.x_max).all():
-                print(self.x_min, x_min)
-                print(self.x_max, x_max)
                 self.x_min = self.x_min + x_min
                 self.x_max = self.x_max + x_max
 
@@ -382,8 +381,6 @@ class QuantLinear(Module):
             w_min = w_transform.min().expand(1)
             w_max = w_transform.max().expand(1)
         #exportGeneric2d(w_transform.cpu().detach().numpy(), "weight_verification")
-        #exportGeneric2d(w_max.cpu().detach().numpy(), "wmax_verification")
-        #exportGeneric2d(w_min.cpu().detach().numpy(), "wmin_verification")
         self.fc_scaling_factor = symmetric_linear_quantization_params(
                 self.weight_bit, w_min, w_max, self.per_channel)
         #exportGeneric2d(self.fc_scaling_factor.cpu().detach().numpy(), "fc_verification")
@@ -560,31 +557,23 @@ class IntGELU(Module):
     def int_erf(self, x_int, scaling_factor):
         with torch.no_grad():
             b_int = torch.floor(self.coeff[1] / scaling_factor)
-            print('%.10f'%self.coeff[1])
-            #exportGeneric2d((self.coeff[1] / scaling_factor).cpu().detach().numpy(), "bintprefloor_verification")
-            #exportGeneric2d(b_int.cpu().detach().numpy(), "bintfloor_verification")
             c_int = torch.floor(self.coeff[2] / scaling_factor ** 2)
-            #exportGeneric2d(c_int.cpu().detach().numpy(), "cintfloor_verification")
+            #export_header(b_int.cpu().detach().numpy(), "gelu_b_int")
+            #export_header(c_int.cpu().detach().numpy(), "gelu_c_int")
+            #export_header(-b_int.cpu().detach().numpy(), "gelu_neg_b_int")
         with torch.no_grad():
             sign = torch.sign(x_int)
         abs_int = torch.abs(x_int)
         abs_int = torch.min(abs_int, -b_int)
-        #exportGeneric3d(abs_int.cpu().detach().numpy(), "absint_verification")
-        #exportGeneric2d(b_int.cpu().detach().numpy(), "bint_verification")
-        #exportGeneric2d(c_int.cpu().detach().numpy(), "cint_verification")
-        #exportGeneric3d((abs_int + b_int).cpu().detach().numpy(), "yadd_verification")
-        #exportGeneric3d(((abs_int + b_int) ** 2).cpu().detach().numpy(), "y2_verification")
         y_int = (abs_int + b_int) ** 2 + c_int
         y_int = sign * y_int
         scaling_factor = scaling_factor ** 2 * self.coeff[0]
-        #exportGeneric3d(y_int.cpu().detach().numpy(), "y_verification")
+        #export_header((y_int / 2 ** self.n).cpu().detach().numpy(), "gelu_pre_fte")
         y_int = floor_ste.apply(y_int / 2 ** self.n)
         scaling_factor = scaling_factor * 2 ** self.n
         return y_int, scaling_factor
 
     def forward(self, x, scaling_factor=None):
-        #exportGeneric3d(x.cpu().detach().numpy(), "intgelu_layer0")
-        #exportGeneric2d(scaling_factor.cpu().detach().numpy(), "intgelu_sf_layer0")
 
         if self.quant_mode == 'none':
             return self.activation_fn(x), None
@@ -593,11 +582,13 @@ class IntGELU(Module):
                 "unsupported quant mode: {}".format(quant_mode)
 
         x_int = x / scaling_factor
+        #export_header(x_int.cpu().detach().numpy(), "gelu_x_int")
+        #print(x_int)
         sigmoid_int, sigmoid_scaling_factor = self.int_erf(x_int, scaling_factor / self.k)
-        #exportGeneric3d(sigmoid_int.cpu().detach().numpy(), "sigma_verification")
         shift_int = torch.floor(1. / sigmoid_scaling_factor)
-
+        #export_header(shift_int.cpu().detach().numpy(), "gelu_shift_int")
         x_int = x_int * (sigmoid_int + shift_int)
+        #export_header(x_int.cpu().detach().numpy(), "gelu_result_int")
         scaling_factor = scaling_factor * sigmoid_scaling_factor / 2
         return x_int * scaling_factor, scaling_factor
 
@@ -643,6 +634,8 @@ class IntSoftmax(Module):
         with torch.no_grad():
             b_int = torch.floor(self.coef[1] / scaling_factor)
             c_int = torch.floor(self.coef[2] / scaling_factor ** 2)
+            export_header(b_int.cpu().detach().numpy(), "softmax_b_int")
+            export_header(c_int.cpu().detach().numpy(), "softmax_c_int")
         z = x_int + b_int
         z = x_int * z
         z = z + c_int
@@ -652,12 +645,18 @@ class IntSoftmax(Module):
     def int_exp(self, x_int, scaling_factor):
         with torch.no_grad():
             x0_int = torch.floor(self.x0 / scaling_factor)
+        export_header(x0_int.cpu().detach().numpy(), "softmax_x0_int")
         x_int = torch.max(x_int, self.n * x0_int)
+        #print("x_int: ", x_int)
         q = floor_ste.apply(x_int / x0_int)
+        #print("q: ", q)
         r = x_int - x0_int * q
+        #print("r: ", r)
         exp_int, exp_scaling_factor = self.int_polynomial(r, scaling_factor)
+        export_header(exp_int.cpu().detach().numpy(), "softmax_poly")
         exp_int = torch.clamp(floor_ste.apply(exp_int * 2 ** (self.n - q)), min=0)
-        #export_header(exp_int.cpu().detach().numpy(), "softmax_ip_exp1")
+        print("exp_scaling_factor: ", exp_scaling_factor)
+        export_header(exp_int.cpu().detach().numpy(), "softmax_exp_int")
         scaling_factor = exp_scaling_factor / 2 ** self.n
         return exp_int, scaling_factor
 
@@ -668,19 +667,17 @@ class IntSoftmax(Module):
         assert self.quant_mode == 'symmetric', \
                 "unsupported quant mode: {}".format(quant_mode)
         x_int = x/ scaling_factor
+        export_header(x_int.cpu().detach().numpy(), "softmax_x_int")
         x_int_max, _ = x_int.max(dim=-1, keepdim=True)
         x_int = x_int - x_int_max
-        #export_header(x_int.cpu().detach().numpy(), "softmax_b4_int_exp")
         exp_int, exp_scaling_factor = self.int_exp(x_int, scaling_factor)
-        #export_header(exp_int.cpu().detach().numpy(), "softmax_b4_act")
         exp, exp_scaling_factor = self.act(exp_int, exp_scaling_factor)
-        #export_header(exp.cpu().detach().numpy(), "softmax_after_act")
         exp_int = exp / exp_scaling_factor
+        #print(exp_int)
         exp_int_sum = exp_int.sum(dim=-1, keepdim=True)
         factor = floor_ste.apply(2**32 / exp_int_sum)
         exp_int = floor_ste.apply(exp_int * factor / 2 ** (32 - self.output_bit))
         scaling_factor = 1 / 2 ** self.output_bit
-        export_header((exp_int * scaling_factor).cpu().detach().numpy(), "softmax_layer0_out")
-        print(scaling_factor)
-        exit()
+        export_header(exp_int.cpu().detach().numpy(), "softmax_return")
         return exp_int * scaling_factor, scaling_factor
+        
